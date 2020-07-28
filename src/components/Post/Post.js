@@ -1,14 +1,16 @@
 import React from 'react';
 
 import './Post.css';
+// import { withRouter } from 'react-router';
 
-const post = (props) => (
-    <article className="Post" onClick={props.clicked}>
+const post = (props) =>  (
+        <article className="Post" onClick={props.clicked}>
         <h1>{props.title}</h1>
         <div className="Info">
             <div className="Author">{props.Author}</div>
         </div>
     </article>
-);
+ );
 
-export default post;
+
+export default  post;

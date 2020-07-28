@@ -1,74 +1,47 @@
 import React, { Component } from 'react';
-// import axios from 'axios';
-import axios  from '../../axios';
+import { Route, NavLink, Switch } from 'react-router-dom';
 
-import Post from '../../components/Post/Post';
-import FullPost from '../../components/FullPost/FullPost';
-import NewPost from '../../components/NewPost/NewPost';
+
 import './Blog.css';
+import Posts from './Posts/Post';
+import asynComponent from '../../hoc/asyncComponent';
+// import NewPost from './NewPost/NewPost';
+
+// This is Called Lazy Laoding for App performance
+const AsyncNewPost = asynComponent(()=>{
+    return import('./NewPost/NewPost')
+})
+
 
 class Blog extends Component {
-    state = {
-        posts :[],
-        selectedPostId: null,
-        error : false
-    }
-
- componentDidMount (){
-   
-    // axios.get('https://jsonplaceholder.typicode.com/photos?_limit=6')
-
-   axios.get('/photos')
-        .then(res =>{
-            const posts = res.data.slice(0, 6)
-            const updatePosts = posts.map(post => {
-                return {
-                    ...post,
-                    Author: 'Thompson'
-                }
-            })
-
-            this.setState({ posts : updatePosts })
-        }) 
-        .catch(err => {
-             this.setState({error:  true})
-        })
-    }
-
-postSelectedHandler = (id)=>{
- 
-    this.setState({selectedPostId : id})
-    console.log(id)
-}
     render () {
-
-        let posts = <p style={{textAlign :'center'}}>Some thing Went Wrong</p>
-
-        if(!this.state.error){
-
-            posts = this.state.posts.map(post  =>{
-                return <Post 
-                    key={post.id} 
-                    title = {post.title}
-                    Author = {post.Author}
-                    clicked = {() => this.postSelectedHandler(post.id) }/>
-         })
-
-            
-        }
-   
         return (
             <div>
-                <section className="Posts">
-                    {posts}
-                </section>
-                <section> 
-                    <FullPost id = {this.state.selectedPostId}/>
-                </section>
-                <section>
-                    <NewPost />
-                </section>
-            </div>
+                <header className="Blog">
+                    <nav>
+                    <ul>
+                        <li><NavLink exact  to="/posts/" 
+                           activeClassName="my_active" 
+                           activeStyle={{color:'red'}}>Posts</NavLink >
+                        </li>
+                        <li><NavLink  to={{
+                            pathname:"/new-posts",
+                            hash: "#submit",
+                            search:"?quick-submit=true"
+                        }}>New Posts  </NavLink ></li>
+                        </ul>
+                    </nav>
+                </header>
+                <Switch>
+                   <Route path="/new-posts"  component={AsyncNewPost}/> 
+                   <Route path="/posts"  component={Posts}/> 
+                   {/*<Redirect from="/" to="posts/" />*/}
+                   {/* <Route path="/"  component={Posts}/> */} 
+
+                </Switch>
+
+
+             </div>
         );
     }
 }
